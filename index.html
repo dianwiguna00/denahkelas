@@ -324,21 +324,42 @@ async function loadKelas(){
             }
         });
 
-        pasanganMeja=[];
+let lakiPairs = [];
+let perempuanPairs = [];
+pasanganMeja = [];
 
-        for(let i=0;i<laki.length;i+=2){
-            pasanganMeja.push([
-                laki[i] || "",
-                laki[i+1] || ""
-            ]);
-        }
+// pasangan laki-laki
+for(let i=0;i<laki.length;i+=2){
+    lakiPairs.push([
+        laki[i] || "",
+        laki[i+1] || ""
+    ]);
+}
 
-        for(let i=0;i<perempuan.length;i+=2){
-            pasanganMeja.push([
-                perempuan[i] || "",
-                perempuan[i+1] || ""
-            ]);
-        }
+// pasangan perempuan
+for(let i=0;i<perempuan.length;i+=2){
+    perempuanPairs.push([
+        perempuan[i] || "",
+        perempuan[i+1] || ""
+    ]);
+}
+
+// selang-seling L dan P
+while(lakiPairs.length || perempuanPairs.length){
+
+    if(lakiPairs.length){
+        pasanganMeja.push(
+            lakiPairs.shift()
+        );
+    }
+
+    if(perempuanPairs.length){
+        pasanganMeja.push(
+            perempuanPairs.shift()
+        );
+    }
+
+}
 
         tampilkanDenah();
 
