@@ -142,6 +142,75 @@ button:hover{
     }
 }
 
+@page{
+    size:A4 landscape;
+    margin:8mm;
+}
+
+body{
+    font-family:Arial,sans-serif;
+    margin:0;
+    padding:8px;
+}
+
+.header h1{
+    font-size:20px;
+    margin:5px 0;
+}
+
+.guru{
+    width:180px;
+    padding:8px;
+    font-size:14px;
+    margin-bottom:10px;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:8px;
+}
+
+.meja{
+    border:1px solid #333;
+    border-radius:6px;
+    padding:4px;
+}
+
+.nomor-meja{
+    font-size:12px;
+    font-weight:bold;
+    margin-bottom:4px;
+}
+
+.kursi{
+    min-height:48px;
+    font-size:11px;
+    padding:4px;
+    margin:2px 0;
+    line-height:1.2;
+    word-break:break-word;
+}
+
+@media print{
+
+    body{
+        zoom:95%;
+    }
+
+    .toolbar{
+        display:none;
+    }
+
+    .header{
+        margin-bottom:8px;
+    }
+
+    .guru{
+        margin-bottom:8px;
+    }
+}
+
 </style>
 </head>
 <body>
