@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Denah Tempat Duduk Siswa</title>
+
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    font-family:Segoe UI,Arial,sans-serif;
+    background:#f4f7fb;
+    margin:0;
+    padding:20px;
+}
+
+.header{
+    text-align:center;
+    margin-bottom:20px;
+}
+
+.header h1{
+    margin:0;
+    color:#2c3e50;
+}
+
+.toolbar{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    justify-content:center;
+    margin-bottom:20px;
+}
+
+select,
+button{
+    padding:10px 15px;
+    border:none;
+    border-radius:8px;
+    font-size:14px;
+}
+
+select{
+    border:1px solid #ccc;
+}
+
+button{
+    cursor:pointer;
+    background:#1976d2;
+    color:white;
+}
+
+button:hover{
+    background:#1259a8;
+}
+
+#status{
+    text-align:center;
+    margin-bottom:15px;
+    color:#444;
+}
+
+.denah-wrapper{
+    max-width:1200px;
+    margin:auto;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:15px;
+}
+
+.meja{
+    background:white;
+    border-radius:12px;
+    border:2px solid #333;
+    padding:10px;
+    box-shadow:0 2px 4px rgba(0,0,0,0.1);
+}
+
+.nomor-meja{
+    font-weight:bold;
+    text-align:center;
+    margin-bottom:10px;
+    color:#444;
+}
+
+.kursi{
+    background:#eaf4ff;
+    border:1px solid #90caf9;
+    border-radius:8px;
+    padding:10px;
+    margin-bottom:8px;
+    min-height:55px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    font-size:13px;
+    font-weight:500;
+}
+
+.guru{
+    margin:auto;
+    width:300px;
+    background:#ffeb99;
+    border:2px solid #b8860b;
+    border-radius:10px;
+    text-align:center;
+    padding:15px;
+    margin-bottom:25px;
+    font-weight:bold;
+}
+
+@media(max-width:900px){
+    .grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+}
+
+@media(max-width:600px){
+    .grid{
+        grid-template-columns:1fr;
+    }
+}
+
+@media print{
+    button,
+    select,
+    .toolbar{
+        display:none;
+    }
+
+    body{
+        background:white;
+    }
+}
+
+</style>
+</head>
+<body>
+
+<div class="header">
+    <h1>DENAH TEMPAT DUDUK</h1>
+</div>
+
+<div class="toolbar">
+
+    <select id="kelas"></select>
+
+    <button onclick="loadKelas()">
+        Tampilkan
+    </button>
+
+    <button onclick="acakTempatDuduk()">
+        Acak Tempat Duduk
+    </button>
+
+    <button onclick="window.print()">
+        Cetak
+    </button>
+
+</div>
+
+<div id="status"></div>
+
+<div class="denah-wrapper">
+
+    <div class="guru">
+        MEJA GURU
+    </div>
+
+    <div id="denah" class="grid"></div>
+
+</div>
+
+<script>
+
+// ==========================
+// GANTI DENGAN ID SPREADSHEET
+// ==========================
+
+const SPREADSHEET_ID = "1C2xkwniSDT5qwdw0CNTjJuhqYgW0wJwhI8RPcpGHfCw";
+
+// ==========================
+
+const daftarKelas = [
+
+"7A","7B","7C","7D","7E","7F","7G","7H","7I",
+"8A","8B","8C","8D","8E","8F","8G","8H","8I",
+"9A","9B","9C","9D","9E","9F","9G","9H","9I"
+
+];
+
+const selectKelas =
+document.getElementById("kelas");
+
+daftarKelas.forEach(k=>{
+
+    let option =
+    document.createElement("option");
+
+    option.value = k;
+    option.textContent = k;
+
+    selectKelas.appendChild(option);
+
+});
+
+let pasanganMeja = [];
+
+async function loadKelas(){
+
+    const kelas =
+    document.getElementById("kelas").value;
+
+    const url =
+    `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:json&sheet=${kelas}`;
+
+    try{
+
+        const response = await fetch(url);
+        const text = await response.text();
+
+        console.log(text);
+
+        const json =
+        JSON.parse(text.substr(47).slice(0,-2));
+
+        console.log(json);
+
+        let laki = [];
+        let perempuan = [];
+
+        json.table.rows.forEach(row=>{
+
+            let nama =
+                row.c?.[2]?.v || "";
+
+            let jk =
+                row.c?.[3]?.v || "";
+
+            if(jk==="L"){
+                laki.push(nama);
+            }
+
+            if(jk==="P"){
+                perempuan.push(nama);
+            }
+        });
+
+        pasanganMeja=[];
+
+        for(let i=0;i<laki.length;i+=2){
+            pasanganMeja.push([
+                laki[i] || "",
+                laki[i+1] || ""
+            ]);
+        }
+
+        for(let i=0;i<perempuan.length;i+=2){
+            pasanganMeja.push([
+                perempuan[i] || "",
+                perempuan[i+1] || ""
+            ]);
+        }
+
+        tampilkanDenah();
+
+    }catch(err){
+
+        console.error(err);
+        alert("Data tidak dapat dibaca.");
+
+    }
+
+}
+
+function tampilkanDenah(){
+
+    const denah =
+    document.getElementById("denah");
+
+    denah.innerHTML = "";
+
+    for(let i=0;i<16;i++){
+
+        let siswa1 = "";
+        let siswa2 = "";
+
+        if(pasanganMeja[i]){
+            siswa1 = pasanganMeja[i][0];
+            siswa2 = pasanganMeja[i][1];
+        }
+
+        const meja =
+        document.createElement("div");
+
+        meja.className = "meja";
+
+        meja.innerHTML = `
+            <div class="nomor-meja">
+                Meja ${i+1}
+            </div>
+
+            <div class="kursi">
+                ${siswa1}
+            </div>
+
+            <div class="kursi">
+                ${siswa2}
+            </div>
+        `;
+
+        denah.appendChild(meja);
+    }
+}
+
+function acakTempatDuduk(){
+
+    for(
+        let i=dataSiswa.length-1;
+        i>0;
+        i--
+    ){
+
+        const j =
+        Math.floor(
+            Math.random()*(i+1)
+        );
+
+        [dataSiswa[i],dataSiswa[j]]
+        =
+        [dataSiswa[j],dataSiswa[i]];
+
+    }
+
+    tampilkanDenah();
+
+}
+
+</script>
+
+</body>
+</html>
