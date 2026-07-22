@@ -315,18 +315,25 @@ async function loadKelas(){
             let jk =
                 row.c?.[3]?.v || "";
 
-            if(jk==="L"){
-                laki.push(nama);
-            }
+if(
+    nama &&
+    nama !== "NAMA SISWA" &&
+    jk === "L"
+){
+    laki.push(nama);
+}
 
-            if(jk==="P"){
-                perempuan.push(nama);
-            }
+if(
+    nama &&
+    nama !== "NAMA SISWA" &&
+    jk === "P"
+){
+    perempuan.push(nama);
+}
         });
 
 let lakiPairs = [];
 let perempuanPairs = [];
-pasanganMeja = [];
 
 // pasangan laki-laki
 for(let i=0;i<laki.length;i+=2){
@@ -344,23 +351,42 @@ for(let i=0;i<perempuan.length;i+=2){
     ]);
 }
 
-// selang-seling L dan P
-while(lakiPairs.length || perempuanPairs.length){
+let hasil = [];
 
-    if(lakiPairs.length){
-        pasanganMeja.push(
-            lakiPairs.shift()
-        );
+// pola catur 4 x 4
+for(let baris=0; baris<4; baris++){
+
+    for(let kolom=0; kolom<4; kolom++){
+
+        const posisiLaki =
+            (baris + kolom) % 2 === 0;
+
+        if(posisiLaki && lakiPairs.length){
+
+            hasil.push(lakiPairs.shift());
+
+        }else if(!posisiLaki && perempuanPairs.length){
+
+            hasil.push(perempuanPairs.shift());
+
+        }else if(lakiPairs.length){
+
+            hasil.push(lakiPairs.shift());
+
+        }else if(perempuanPairs.length){
+
+            hasil.push(perempuanPairs.shift());
+
+        }
+
     }
-
-    if(perempuanPairs.length){
-        pasanganMeja.push(
-            perempuanPairs.shift()
-        );
-    }
-
 }
 
+pasanganMeja = hasil;
+
+document.getElementById("status").innerHTML =
+`Kelas ${kelas} | ${laki.length + perempuan.length} siswa`;
+            
         tampilkanDenah();
 
     }catch(err){
@@ -415,7 +441,7 @@ function tampilkanDenah(){
 function acakTempatDuduk(){
 
     for(
-        let i=dataSiswa.length-1;
+        let i=pasanganMeja.length-1;
         i>0;
         i--
     ){
@@ -425,14 +451,11 @@ function acakTempatDuduk(){
             Math.random()*(i+1)
         );
 
-        [dataSiswa[i],dataSiswa[j]]
-        =
-        [dataSiswa[j],dataSiswa[i]];
-
+        [pasanganMeja[i], pasanganMeja[j]] =
+        [pasanganMeja[j], pasanganMeja[i]];
     }
 
     tampilkanDenah();
-
 }
 
 </script>
