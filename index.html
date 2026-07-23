@@ -231,9 +231,9 @@ body{
         Acak Tempat Duduk
     </button>
 
-    <button onclick="window.print()">
-        Cetak
-    </button>
+<button onclick="cetakDenah()">
+    Cetak
+</button>
 
 </div>
 
@@ -457,7 +457,22 @@ function acakTempatDuduk(){
 
     tampilkanDenah();
 }
+function cetakDenah(){
 
+    if(
+        window.Android &&
+        typeof Android.printPage === "function"
+    ){
+
+        Android.printPage();
+
+    }else{
+
+        window.print();
+
+    }
+
+}
 </script>
 
 </body>
