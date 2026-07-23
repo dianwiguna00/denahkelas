@@ -458,20 +458,7 @@ function acakTempatDuduk(){
     tampilkanDenah();
 }
 function cetakDenah(){
-
-    if(
-        window.Android &&
-        typeof Android.printPage === "function"
-    ){
-
-        Android.printPage();
-
-    }else{
-
-        window.print();
-
-    }
-
+    Android.cetakPDF();
 }
 </script>
 
